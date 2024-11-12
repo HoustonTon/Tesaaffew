@@ -24,12 +24,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
-import DoneIcon from '@mui/icons-material/Done'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import { sendTelegramNotification, testTelegramConnection } from '../utils/telegram'
 
 function Cart() {
   const navigate = useNavigate()
-  const [orderPlaced, setOrderPlaced] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   
@@ -94,9 +93,8 @@ ${orderDetails}
       `.trim()
 
       await sendTelegramNotification(message)
-      setOrderPlaced(true)
-      setSuccessDialogOpen(true)
       localStorage.removeItem('cart')
+      setSuccessDialogOpen(true)
     } catch (error) {
       alert('Ошибка при оформлении заказа: ' + error.message)
     } finally {
@@ -132,88 +130,106 @@ ${orderDetails}
   }
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Корзина
-      </Typography>
+    <>
+      <Box sx={{ py: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom align="center">
+          Корзина
+        </Typography>
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <List>
-            {cart.map((item) => (
-              <ListItem key={item.id}>
-                <ListItemIcon sx={{ color: item.product.color }}>
-                  {getIcon(item.product.iconName)}
-                </ListItemIcon>
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <List>
+              {cart.map((item) => (
+                <ListItem key={item.id}>
+                  <ListItemIcon sx={{ color: item.product.color }}>
+                    {getIcon(item.product.iconName)}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.product.name}
+                    secondary={`$${item.price} (₽${item.price * 117})`}
+                  />
+                </ListItem>
+              ))}
+              <Divider sx={{ my: 2 }} />
+              <ListItem>
                 <ListItemText
-                  primary={item.product.name}
-                  secondary={`$${item.price} (₽${item.price * 117})`}
+                  primary={
+                    <Typography variant="h6">
+                      Итого: ${total} (₽{totalRub})
+                    </Typography>
+                  }
                 />
               </ListItem>
-            ))}
-            <Divider sx={{ my: 2 }} />
-            <ListItem>
-              <ListItemText
-                primary={
-                  <Typography variant="h6">
-                    Итого: ${total} (₽{totalRub})
-                  </Typography>
-                }
-              />
-            </ListItem>
-          </List>
-        </CardContent>
-      </Card>
+            </List>
+          </CardContent>
+        </Card>
 
-      <Stack spacing={2}>
-        <Stack direction="row" spacing={2}>
+        <Stack spacing={2}>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={handleContinueShopping}
+              startIcon={<ArrowBackIcon />}
+            >
+              Продолжить покупки
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={handlePlaceOrder}
+              startIcon={<CheckCircleIcon />}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Оформление...' : 'Подтвердить заказ'}
+            </Button>
+          </Stack>
+
           <Button
             variant="outlined"
-            size="large"
-            fullWidth
-            onClick={handleContinueShopping}
-            startIcon={<ArrowBackIcon />}
-          >
-            Продолжить покупки
-          </Button>
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={handlePlaceOrder}
-            startIcon={<CheckCircleIcon />}
+            color="secondary"
+            onClick={handleTestConnection}
+            startIcon={<SendIcon />}
             disabled={isLoading}
           >
-            {isLoading ? 'Оформление...' : 'Подтвердить заказ'}
+            Проверить подключение к Telegram
           </Button>
         </Stack>
+      </Box>
 
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={handleTestConnection}
-          startIcon={<SendIcon />}
-          disabled={isLoading}
-        >
-          Проверить подключение к Telegram
-        </Button>
-      </Stack>
-
-      {/* Диалог успешного оформления заказа */}
       <Dialog
         open={successDialogOpen}
         onClose={handleSuccessClose}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            p: 2
+          }
+        }}
       >
         <DialogContent>
-          <Box sx={{ textAlign: 'center', py: 2 }}>
-            <DoneIcon sx={{ fontSize: 60, color: 'success.main', mb: 2 }} />
-            <Typography variant="h5" gutterBottom>
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2
+          }}>
+            <TaskAltIcon sx={{ 
+              fontSize: 80, 
+              color: 'success.main',
+              animation: 'fadeIn 0.5s ease-out'
+            }} />
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
               Спасибо за заказ!
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Наш менеджер свяжется с {user.nickname} в течение нескольких минут
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 400 }}>
+              Наш менеджер свяжется с <strong>{user.nickname}</strong> в течение нескольких минут
             </Typography>
           </Box>
         </DialogContent>
@@ -221,6 +237,7 @@ ${orderDetails}
           <Button
             variant="contained"
             onClick={handleSuccessClose}
+            size="large"
             startIcon={<ShoppingCartIcon />}
           >
             Вернуться к покупкам
@@ -228,16 +245,15 @@ ${orderDetails}
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={orderPlaced}
-        autoHideDuration={6000}
-        onClose={() => setOrderPlaced(false)}
-      >
-        <Alert severity="success" sx={{ width: '100%' }}>
-          Заказ успешно оформлен!
-        </Alert>
-      </Snackbar>
-    </Box>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+          }
+        `}
+      </style>
+    </>
   )
 }
 
