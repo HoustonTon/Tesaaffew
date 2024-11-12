@@ -19,22 +19,35 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
-import SteamIcon from '@mui/icons-material/SportsEsports'
-import PlayStationIcon from '@mui/icons-material/Games'
-import XboxIcon from '@mui/icons-material/Gamepad'
+import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import PaymentsIcon from '@mui/icons-material/Payments'
 import { sendTelegramNotification, testTelegramConnection } from '../utils/telegram'
+
+const getIcon = (iconName) => {
+  switch (iconName) {
+    case 'card':
+      return <CreditCardIcon />
+    case 'apple':
+      return <AppleIcon />
+    case 'bank':
+      return <AccountBalanceIcon />
+    case 'wallet':
+      return <PaymentsIcon />
+    default:
+      return <ShoppingCartIcon />
+  }
+}
 
 function Cart() {
   const navigate = useNavigate()
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   
-  // Добавляем обработку ошибок при чтении корзины
   let cart = []
   try {
     cart = JSON.parse(localStorage.getItem('cart') || '[]')
-    console.log('Cart loaded:', cart) // Отладочный лог
   } catch (error) {
     console.error('Error loading cart:', error)
   }
@@ -48,21 +61,6 @@ function Cart() {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0)
   const totalRub = total * 117
-
-  const getIcon = (iconName) => {
-    switch (iconName) {
-      case 'steam':
-        return <SteamIcon />
-      case 'playstation':
-        return <PlayStationIcon />
-      case 'xbox':
-        return <XboxIcon />
-      case 'apple':
-        return <AppleIcon />
-      default:
-        return <ShoppingCartIcon />
-    }
-  }
 
   const handleTestConnection = async () => {
     setIsLoading(true)
@@ -90,7 +88,7 @@ function Cart() {
 Имя: ${user.nickname}
 Email: ${user.email}
 
-🛍️ Заказ:
+💳 Заказ:
 ${orderDetails}
 
 💰 Итого: $${total} (₽${totalRub})
@@ -122,16 +120,16 @@ ${orderDetails}
           onClick={handleContinueShopping}
           sx={{ mt: 2 }}
         >
-          Перейти к покупкам
+          Выбрать способ оплаты
         </Button>
       </Box>
     )
   }
 
   return (
-    <Box>
+    <Box sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
-        Ваша корзина
+        Корзина
       </Typography>
 
       <Card sx={{ mb: 3 }}>
@@ -206,6 +204,11 @@ ${orderDetails}
         </Alert>
       </Snackbar>
     </Box>
+  )
+}
+
+export default Cart
+
   )
 }
 
