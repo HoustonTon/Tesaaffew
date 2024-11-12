@@ -11,12 +11,7 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  Alert,
-  Snackbar,
-  Stack,
-  Dialog,
-  DialogContent,
-  DialogActions
+  Stack
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -30,7 +25,7 @@ import { sendTelegramNotification, testTelegramConnection } from '../utils/teleg
 function Cart() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+  const [isOrderComplete, setIsOrderComplete] = useState(false)
   
   let cart = []
   try {
@@ -94,7 +89,7 @@ ${orderDetails}
 
       await sendTelegramNotification(message)
       localStorage.removeItem('cart')
-      setSuccessDialogOpen(true)
+      setIsOrderComplete(true)
     } catch (error) {
       alert('Ошибка при оформлении заказа: ' + error.message)
     } finally {
@@ -106,9 +101,74 @@ ${orderDetails}
     navigate('/products')
   }
 
-  const handleSuccessClose = () => {
-    setSuccessDialogOpen(false)
-    navigate('/products')
+  if (isOrderComplete) {
+    return (
+      <Box 
+        sx={{ 
+          textAlign: 'center', 
+          mt: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3
+        }}
+      >
+        <TaskAltIcon 
+          sx={{ 
+            fontSize: 80, 
+            color: 'success.main',
+            animation: 'fadeIn 0.5s ease-out'
+          }} 
+        />
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 'bold',
+            animation: 'fadeIn 0.5s ease-out',
+            animationDelay: '0.2s',
+            animationFillMode: 'both'
+          }}
+        >
+          Спасибо за оформление заказа
+        </Typography>
+        <Typography 
+          variant="h6" 
+          color="text.secondary"
+          sx={{ 
+            maxWidth: 600,
+            animation: 'fadeIn 0.5s ease-out',
+            animationDelay: '0.4s',
+            animationFillMode: 'both'
+          }}
+        >
+          Наш менеджер скоро свяжется с вами по телеграм <strong>{user.nickname}</strong>
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleContinueShopping}
+          startIcon={<ShoppingCartIcon />}
+          sx={{ 
+            mt: 2,
+            animation: 'fadeIn 0.5s ease-out',
+            animationDelay: '0.6s',
+            animationFillMode: 'both'
+          }}
+        >
+          Вернуться к покупкам
+        </Button>
+
+        <style>
+          {`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}
+        </style>
+      </Box>
+    )
   }
 
   if (!cart.length) {
@@ -130,130 +190,73 @@ ${orderDetails}
   }
 
   return (
-    <>
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Корзина
-        </Typography>
+    <Box sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom align="center">
+        Корзина
+      </Typography>
 
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <List>
-              {cart.map((item) => (
-                <ListItem key={item.id}>
-                  <ListItemIcon sx={{ color: item.product.color }}>
-                    {getIcon(item.product.iconName)}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.product.name}
-                    secondary={`$${item.price} (₽${item.price * 117})`}
-                  />
-                </ListItem>
-              ))}
-              <Divider sx={{ my: 2 }} />
-              <ListItem>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <List>
+            {cart.map((item) => (
+              <ListItem key={item.id}>
+                <ListItemIcon sx={{ color: item.product.color }}>
+                  {getIcon(item.product.iconName)}
+                </ListItemIcon>
                 <ListItemText
-                  primary={
-                    <Typography variant="h6">
-                      Итого: ${total} (₽{totalRub})
-                    </Typography>
-                  }
+                  primary={item.product.name}
+                  secondary={`$${item.price} (₽${item.price * 117})`}
                 />
               </ListItem>
-            </List>
-          </CardContent>
-        </Card>
+            ))}
+            <Divider sx={{ my: 2 }} />
+            <ListItem>
+              <ListItemText
+                primary={
+                  <Typography variant="h6">
+                    Итого: ${total} (₽{totalRub})
+                  </Typography>
+                }
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
 
-        <Stack spacing={2}>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              size="large"
-              fullWidth
-              onClick={handleContinueShopping}
-              startIcon={<ArrowBackIcon />}
-            >
-              Продолжить покупки
-            </Button>
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              onClick={handlePlaceOrder}
-              startIcon={<CheckCircleIcon />}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Оформление...' : 'Подтвердить заказ'}
-            </Button>
-          </Stack>
-
+      <Stack spacing={2}>
+        <Stack direction="row" spacing={2}>
           <Button
             variant="outlined"
-            color="secondary"
-            onClick={handleTestConnection}
-            startIcon={<SendIcon />}
-            disabled={isLoading}
+            size="large"
+            fullWidth
+            onClick={handleContinueShopping}
+            startIcon={<ArrowBackIcon />}
           >
-            Проверить подключение к Telegram
+            Продолжить покупки
           </Button>
-        </Stack>
-      </Box>
-
-      <Dialog
-        open={successDialogOpen}
-        onClose={handleSuccessClose}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            p: 2
-          }
-        }}
-      >
-        <DialogContent>
-          <Box sx={{ 
-            textAlign: 'center', 
-            py: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <TaskAltIcon sx={{ 
-              fontSize: 80, 
-              color: 'success.main',
-              animation: 'fadeIn 0.5s ease-out'
-            }} />
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-              Спасибо за заказ!
-            </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 400 }}>
-              Наш менеджер свяжется с <strong>{user.nickname}</strong> в течение нескольких минут
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
           <Button
             variant="contained"
-            onClick={handleSuccessClose}
             size="large"
-            startIcon={<ShoppingCartIcon />}
+            fullWidth
+            onClick={handlePlaceOrder}
+            startIcon={<CheckCircleIcon />}
+            disabled={isLoading}
           >
-            Вернуться к покупкам
+            {isLoading ? 'Оформление...' : 'Подтвердить заказ'}
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Stack>
 
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-          }
-        `}
-      </style>
-    </>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleTestConnection}
+          startIcon={<SendIcon />}
+          disabled={isLoading}
+        >
+          Проверить подключение к Telegram
+        </Button>
+      </Stack>
+    </Box>
   )
 }
 
