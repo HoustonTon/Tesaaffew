@@ -12,46 +12,61 @@ import {
   DialogContent,
   IconButton
 } from '@mui/material'
-import SteamIcon from '@mui/icons-material/SportsEsports'
-import PlayStationIcon from '@mui/icons-material/Games'
-import XboxIcon from '@mui/icons-material/Gamepad'
+import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import PaymentsIcon from '@mui/icons-material/Payments'
 import CloseIcon from '@mui/icons-material/Close'
 
-const giftCodes = [
+const paymentMethods = [
   {
     id: 1,
-    name: 'Steam',
-    description: 'Пополнение кошелька Steam для покупки игр, дополнений и предметов',
-    iconName: 'steam',
-    color: '#171a21',
+    name: 'VISA / Mastercard',
+    description: 'Оплата банковской картой VISA или Mastercard',
+    iconName: 'card',
+    color: '#1a1f71', // VISA blue
     prices: [10, 15, 20, 30, 40, 50]
   },
   {
     id: 2,
-    name: 'PlayStation Store',
-    description: 'Подарочная карта для покупок игр и дополнений в PlayStation Store',
-    iconName: 'playstation',
-    color: '#006FCD',
+    name: 'Apple Pay',
+    description: 'Быстрая оплата через Apple Pay',
+    iconName: 'apple',
+    color: '#000000',
     prices: [10, 15, 20, 30, 40, 50]
   },
   {
     id: 3,
-    name: 'Xbox Live',
-    description: 'Подарочная карта для покупок в Microsoft Store и Xbox Live',
-    iconName: 'xbox',
-    color: '#107C10',
+    name: 'Банковский перевод',
+    description: 'Прямой перевод на банковский счет',
+    iconName: 'bank',
+    color: '#2E7D32', // Green
     prices: [10, 15, 20, 30, 40, 50]
   },
   {
     id: 4,
-    name: 'Apple Store',
-    description: 'Подарочная карта для App Store, iTunes, Apple Music и других сервисов Apple',
-    iconName: 'apple',
-    color: '#A2AAAD',
+    name: 'Электронный кошелек',
+    description: 'Оплата через электронные платежные системы',
+    iconName: 'wallet',
+    color: '#1976D2', // Blue
     prices: [10, 15, 20, 30, 40, 50]
   }
 ]
+
+const getIconComponent = (iconName, size = 40) => {
+  switch (iconName) {
+    case 'card':
+      return <CreditCardIcon sx={{ fontSize: size }} />
+    case 'apple':
+      return <AppleIcon sx={{ fontSize: size }} />
+    case 'bank':
+      return <AccountBalanceIcon sx={{ fontSize: size }} />
+    case 'wallet':
+      return <PaymentsIcon sx={{ fontSize: size }} />
+    default:
+      return null
+  }
+}
 
 function Products() {
   const navigate = useNavigate()
@@ -83,55 +98,54 @@ function Products() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]')
       cart.push(cartItem)
       localStorage.setItem('cart', JSON.stringify(cart))
-      console.log('Added to cart:', cartItem) // Отладочный лог
       setDialogOpen(false)
       navigate('/cart')
     } catch (error) {
       console.error('Error adding to cart:', error)
-      alert('Произошла ошибка при добавлении товара в корзину')
+      alert('Произошла ошибка при добавлении в корзину')
     }
   }
 
   return (
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Выберите подарочную карту
+    <Box sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
+        Выберите способ оплаты
       </Typography>
 
       <Grid container spacing={3}>
-        {giftCodes.map((code) => (
-          <Grid item xs={12} sm={6} md={4} key={code.id}>
+        {paymentMethods.map((method) => (
+          <Grid item xs={12} sm={6} md={4} key={method.id}>
             <Card 
               sx={{ 
                 cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)'
-                }
+                  boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                },
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
               }}
-              onClick={() => handleProductClick(code)}
+              onClick={() => handleProductClick(method)}
             >
-              <CardContent>
+              <CardContent sx={{ flexGrow: 1 }}>
                 <Box 
                   sx={{ 
                     display: 'flex',
                     alignItems: 'center',
                     gap: 2,
                     mb: 2,
-                    color: code.color
+                    color: method.color
                   }}
                 >
-                  {code.iconName === 'steam' && <SteamIcon sx={{ fontSize: 40 }} />}
-                  {code.iconName === 'playstation' && <PlayStationIcon sx={{ fontSize: 40 }} />}
-                  {code.iconName === 'xbox' && <XboxIcon sx={{ fontSize: 40 }} />}
-                  {code.iconName === 'apple' && <AppleIcon sx={{ fontSize: 40 }} />}
+                  {getIconComponent(method.iconName)}
                   <Typography variant="h6">
-                    {code.name}
+                    {method.name}
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  {code.description}
+                  {method.description}
                 </Typography>
               </CardContent>
             </Card>
@@ -150,7 +164,7 @@ function Products() {
             <DialogTitle>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="h6">
-                  Выберите номинал карты
+                  Выберите сумму
                 </Typography>
                 <IconButton onClick={() => setDialogOpen(false)}>
                   <CloseIcon />
@@ -194,3 +208,4 @@ function Products() {
 }
 
 export default Products
+
