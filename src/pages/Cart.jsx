@@ -13,7 +13,10 @@ import {
   Divider,
   Alert,
   Snackbar,
-  Stack
+  Stack,
+  Dialog,
+  DialogContent,
+  DialogActions
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -21,12 +24,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
+import DoneIcon from '@mui/icons-material/Done'
 import { sendTelegramNotification, testTelegramConnection } from '../utils/telegram'
 
 function Cart() {
   const navigate = useNavigate()
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   
   let cart = []
   try {
@@ -79,7 +84,7 @@ function Cart() {
 📦 Новый заказ!
 
 👤 Покупатель:
-Имя: ${user.nickname}
+Telegram: ${user.nickname}
 Email: ${user.email}
 
 💳 Заказ:
@@ -90,6 +95,7 @@ ${orderDetails}
 
       await sendTelegramNotification(message)
       setOrderPlaced(true)
+      setSuccessDialogOpen(true)
       localStorage.removeItem('cart')
     } catch (error) {
       alert('Ошибка при оформлении заказа: ' + error.message)
@@ -99,6 +105,11 @@ ${orderDetails}
   }
 
   const handleContinueShopping = () => {
+    navigate('/products')
+  }
+
+  const handleSuccessClose = () => {
+    setSuccessDialogOpen(false)
     navigate('/products')
   }
 
@@ -188,13 +199,42 @@ ${orderDetails}
         </Button>
       </Stack>
 
+      {/* Диалог успешного оформления заказа */}
+      <Dialog
+        open={successDialogOpen}
+        onClose={handleSuccessClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
+            <DoneIcon sx={{ fontSize: 60, color: 'success.main', mb: 2 }} />
+            <Typography variant="h5" gutterBottom>
+              Спасибо за заказ!
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Наш менеджер свяжется с {user.nickname} в течение нескольких минут
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleSuccessClose}
+            startIcon={<ShoppingCartIcon />}
+          >
+            Вернуться к покупкам
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar
         open={orderPlaced}
         autoHideDuration={6000}
         onClose={() => setOrderPlaced(false)}
       >
         <Alert severity="success" sx={{ width: '100%' }}>
-          Заказ успешно оформлен! Наш менеджер свяжется с вами в ближайшее время.
+          Заказ успешно оформлен!
         </Alert>
       </Snackbar>
     </Box>
