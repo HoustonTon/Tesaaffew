@@ -21,24 +21,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
-import PaymentsIcon from '@mui/icons-material/Payments'
 import { sendTelegramNotification, testTelegramConnection } from '../utils/telegram'
-
-const getIcon = (iconName) => {
-  switch (iconName) {
-    case 'card':
-      return <CreditCardIcon />
-    case 'apple':
-      return <AppleIcon />
-    case 'bank':
-      return <AccountBalanceIcon />
-    case 'wallet':
-      return <PaymentsIcon />
-    default:
-      return <ShoppingCartIcon />
-  }
-}
 
 function Cart() {
   const navigate = useNavigate()
@@ -61,6 +44,17 @@ function Cart() {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0)
   const totalRub = total * 117
+
+  const getIcon = (iconName) => {
+    switch (iconName) {
+      case 'card':
+        return <CreditCardIcon />
+      case 'apple':
+        return <AppleIcon />
+      default:
+        return <ShoppingCartIcon />
+    }
+  }
 
   const handleTestConnection = async () => {
     setIsLoading(true)
@@ -204,11 +198,6 @@ ${orderDetails}
         </Alert>
       </Snackbar>
     </Box>
-  )
-}
-
-export default Cart
-
   )
 }
 
