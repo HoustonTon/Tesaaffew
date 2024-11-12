@@ -80,10 +80,10 @@ function Welcome() {
                 mb: 2
               }}
             >
-              GameKeys Store
+              PayPort
             </Typography>
             <Typography variant="h5" color="text.secondary" gutterBottom>
-              Ваш надежный магазин цифровых подарочных карт
+              Ваш надежный помощник для оплаты цифровых подписок
             </Typography>
           </Box>
 
@@ -169,16 +169,17 @@ function Welcome() {
                     }}
                   />
                   <TextField
-                    label="Ваше имя"
-                    required
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '&:hover fieldset': {
-                          borderColor: 'primary.main',
+                    label="Ваш никнейм Telegram"
+  required
+  value={nickname}
+  onChange={(e) => setNickname(e.target.value)}
+  fullWidth
+  variant="outlined"
+  helperText="Укажите ваш @username в Telegram для связи"
+  sx={{
+    '& .MuiOutlinedInput-root': {
+      '&:hover fieldset': {
+        borderColor: 'primary.main',
                         },
                       },
                     }}
