@@ -10,14 +10,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   IconButton,
   Link
 } from '@mui/material'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import AppleIcon from '@mui/icons-material/Apple'
 import CloseIcon from '@mui/icons-material/Close'
-import InfoIcon from '@mui/icons-material/Info'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
 const paymentMethods = [
@@ -26,7 +24,7 @@ const paymentMethods = [
     name: 'VISA Prepaid',
     description: 'Оплата банковской картой VISA',
     iconName: 'card',
-    color: '#1a1f71', // VISA blue
+    color: '#1a1f71',
     prices: [10, 15, 20, 30, 40, 50]
   },
   {
@@ -39,17 +37,6 @@ const paymentMethods = [
   }
 ]
 
-const getIconComponent = (iconName, size = 40) => {
-  switch (iconName) {
-    case 'card':
-      return <CreditCardIcon sx={{ fontSize: size }} />
-    case 'apple':
-      return <AppleIcon sx={{ fontSize: size }} />
-    default:
-      return null
-  }
-}
-
 function Products() {
   const navigate = useNavigate()
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -58,6 +45,17 @@ function Products() {
 
   const formatRubles = (dollars) => {
     return (dollars * 117).toLocaleString('ru-RU')
+  }
+
+  const getIconComponent = (iconName, size = 40) => {
+    switch (iconName) {
+      case 'card':
+        return <CreditCardIcon sx={{ fontSize: size }} />
+      case 'apple':
+        return <AppleIcon sx={{ fontSize: size }} />
+      default:
+        return null
+    }
   }
 
   const handleProductClick = (product) => {
