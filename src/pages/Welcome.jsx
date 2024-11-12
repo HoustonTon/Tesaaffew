@@ -11,19 +11,14 @@ import {
   Container,
   IconButton,
   Divider,
-  Paper,
-  useTheme
+  Paper
 } from '@mui/material'
 import GoogleIcon from '@mui/icons-material/Google'
 import FacebookIcon from '@mui/icons-material/Facebook'
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
-import SecurityIcon from '@mui/icons-material/Security'
-import SupportAgentIcon from '@mui/icons-material/SupportAgent'
-import PaymentsIcon from '@mui/icons-material/Payments'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 
 function Welcome() {
   const navigate = useNavigate()
-  const theme = useTheme()
   const [email, setEmail] = useState('')
   const [nickname, setNickname] = useState('')
 
@@ -36,7 +31,6 @@ function Welcome() {
   }
 
   const handleSocialLogin = (platform) => {
-    // В будущем здесь будет реализация входа через соцсети
     alert(`Вход через ${platform} будет доступен в ближайшее время`)
   }
 
@@ -58,33 +52,24 @@ function Welcome() {
             gap: 4
           }}
         >
-          {/* Заголовок */}
-          <Box sx={{ textAlign: 'center', mb: 2 }}>
-            <CardGiftcardIcon 
-              sx={{ 
-                fontSize: 60, 
-                color: theme.palette.primary.main,
-                mb: 2,
-                animation: 'float 3s ease-in-out infinite'
-              }} 
-            />
-            <Typography 
-              variant="h3" 
-              component="h1" 
-              gutterBottom 
-              sx={{ 
-                fontWeight: 'bold',
-                background: 'linear-gradient(45deg, #2196f3 30%, #21CBF3 90%)',
-                backgroundClip: 'text',
-                textFillColor: 'transparent',
-                mb: 2
+          {/* Логотип */}
+          <Box 
+            sx={{ 
+              width: '100%',
+              maxWidth: 300,
+              mb: 2,
+              animation: 'fadeInDown 0.8s ease-out'
+            }}
+          >
+            <img 
+              src="https://i.imgur.com/NXm3qnt.png" 
+              alt="Company Logo" 
+              style={{ 
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain'
               }}
-            >
-              PayPort
-            </Typography>
-            <Typography variant="h5" color="text.secondary" gutterBottom>
-              Ваш надежный помощник для оплаты цифровых подписок
-            </Typography>
+            />
           </Box>
 
           {/* Основные преимущества */}
@@ -95,17 +80,14 @@ function Welcome() {
           >
             {[
               {
-                icon: <SecurityIcon sx={{ fontSize: 40 }} />,
                 title: 'Безопасно',
                 description: 'Гарантируем безопасность каждой покупки'
               },
               {
-                icon: <PaymentsIcon sx={{ fontSize: 40 }} />,
                 title: 'Выгодно',
                 description: 'Лучшие цены и постоянные акции'
               },
               {
-                icon: <SupportAgentIcon sx={{ fontSize: 40 }} />,
                 title: 'Поддержка 24/7',
                 description: 'Всегда готовы помочь с любым вопросом'
               }
@@ -119,13 +101,13 @@ function Welcome() {
                   borderRadius: 4,
                   bgcolor: 'background.paper',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  animation: `fadeIn 0.5s ease-out ${index * 0.2}s`,
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
                   }
                 }}
               >
-                <Box sx={{ color: 'primary.main', mb: 1 }}>{item.icon}</Box>
                 <Typography variant="h6" gutterBottom>{item.title}</Typography>
                 <Typography variant="body2" color="text.secondary">
                   {item.description}
@@ -142,7 +124,8 @@ function Welcome() {
               borderRadius: 4,
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
               bgcolor: 'background.paper',
-              overflow: 'visible'
+              overflow: 'visible',
+              animation: 'fadeIn 0.5s ease-out 0.6s both'
             }}
           >
             <CardContent sx={{ p: 4 }}>
@@ -170,16 +153,16 @@ function Welcome() {
                   />
                   <TextField
                     label="Ваш никнейм Telegram"
-  required
-  value={nickname}
-  onChange={(e) => setNickname(e.target.value)}
-  fullWidth
-  variant="outlined"
-  helperText="Укажите ваш @username в Telegram для связи"
-  sx={{
-    '& .MuiOutlinedInput-root': {
-      '&:hover fieldset': {
-        borderColor: 'primary.main',
+                    required
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    helperText="Укажите ваш @username в Telegram для связи"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        '&:hover fieldset': {
+                          borderColor: 'primary.main',
                         },
                       },
                     }}
@@ -236,7 +219,8 @@ function Welcome() {
             sx={{ 
               mt: 4, 
               textAlign: 'center',
-              width: '100%'
+              width: '100%',
+              animation: 'fadeIn 0.5s ease-out 0.8s both'
             }}
           >
             <Typography variant="body2" color="text.secondary">
@@ -274,13 +258,17 @@ function Welcome() {
         </Box>
       </Container>
 
-      {/* CSS для анимации */}
+      {/* CSS для анимаций */}
       <style>
         {`
-          @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          
+          @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
           }
         `}
       </style>
